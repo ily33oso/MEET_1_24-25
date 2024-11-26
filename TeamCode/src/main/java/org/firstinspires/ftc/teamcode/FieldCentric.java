@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
-public class FieldCentricTeley extends LinearOpMode {
+public class FieldCentric extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
 
@@ -121,11 +121,11 @@ public class FieldCentricTeley extends LinearOpMode {
 
             //arm code
             if (gamepad2.left_bumper) {
-            arm.setPower(0.5);
+                arm.setPower(0.5);
             } else if (gamepad2.right_bumper) {
-            arm.setPower(-0.5);
+                arm.setPower(-0.5);
             } else {
-            arm.setPower(0);
+                arm.setPower(0);
             }
 
 

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
-public class REALTELE extends LinearOpMode {
+public class RealTele extends LinearOpMode {
     static final double COUNTS_PER_MOTOR_REV = 375 ; //EG:MOTOR ENCODER
     static final double DRIVE_GEAR_REDUCTION = 0.5 ; //NO EXTERNAL GEARING
     static final double WHEEL_DIAMETER_INCHES = 7.55906 ; // FOR FIGURING CIRCUMFERENCES
