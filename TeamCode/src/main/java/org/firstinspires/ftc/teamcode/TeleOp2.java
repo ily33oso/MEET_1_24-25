@@ -87,16 +87,16 @@ public class TeleOp2 extends OpMode{
 
         // CLAW
         // check to see how they are
-        if (gamepad1.b) {
-            Lclaw.setPosition(10);
-            Rclaw.setPosition(-10);
-        } else if (gamepad2.b) {
-            Lclaw.setPosition(-10);
-            Rclaw.setPosition(10);
-        } else {
-            Lclaw.setPosition(0);
-            Rclaw.setPosition(0);
-        }
+            if (gamepad1.b) {
+                Lclaw.setPosition(10);
+                Rclaw.setPosition(-10);
+            } else if (gamepad2.b) {
+                Lclaw.setPosition(-10);
+                Rclaw.setPosition(10);
+            } else {
+                Lclaw.setPosition(0);
+                Rclaw.setPosition(0);
+            }
         // lift without a limiter
         if (gamepad2.dpad_up) {
             Lslide.setPower(1);
@@ -108,7 +108,7 @@ public class TeleOp2 extends OpMode{
             Lslide.setPower(0);
             Rslide.setPower(0);
         }
-        telemetry.addData("Lift Position",Lslide.getCurrentPosition() + Rslide.getCurrentPosition() + (int)(COUNTS_PER_INCH) );
+    telemetry.addData("Lift Position",Lslide.getCurrentPosition() + Rslide.getCurrentPosition() + (int)(COUNTS_PER_INCH) );
 
     }
 }

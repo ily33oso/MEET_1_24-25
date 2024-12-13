@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,14 +12,27 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
-public class RealTele extends LinearOpMode {
-    static final double COUNTS_PER_MOTOR_REV = 537.7 ; //EG:MOTOR ENCODER
-    static final double DRIVE_GEAR_REDUCTION = 0.5 ; //NO EXTERNAL GEARING
-    static final double WHEEL_DIAMETER_INCHES = 7.55906 ; // FOR FIGURING CIRCUMFERENCES
+public class Telepwithencoders extends LinearOpMode {
+    static final double COUNTS_PER_MOTOR_REV = 375; //EG:MOTOR ENCODER
+    static final double DRIVE_GEAR_REDUCTION = 0.5; //NO EXTERNAL GEARING
+    static final double WHEEL_DIAMETER_INCHES = 7.55906; // FOR FIGURING CIRCUMFERENCES
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) / (WHEEL_DIAMETER_INCHES * 3.1415);
 
     @Override
     public void runOpMode() throws InterruptedException {
+
+        // Position of the arm when it's lifted
+        int armUpPosition = 1000;
+        // Position of the arm when it's down
+        int armDownPosition = 0;
+
+        // Position of the slides when it's lifted
+        int slideLUpPosition = 1000;
+        int slideRUpPosition = 1000;
+        // Position of the slide when it's down
+        int slideLDownPosition = 0;
+        int slideRDownPosition = 0;
+
         // Declare our motors
         // Make sure your ID's match your configuration
         DcMotor frontLeftMotor = hardwareMap.dcMotor.get("Fl");
@@ -30,6 +44,7 @@ public class RealTele extends LinearOpMode {
         DcMotor arm = hardwareMap.dcMotor.get("a");
         Servo clawL = hardwareMap.servo.get("cL");
         Servo clawR = hardwareMap.servo.get("cR");
+
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
@@ -44,6 +59,23 @@ public class RealTele extends LinearOpMode {
         clawR.setDirection(Servo.Direction.REVERSE);
         clawL.setDirection(Servo.Direction.FORWARD);
 
+
+        // Reset the motor encoder so that it reads zero ticks, arm
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // Sets the starting position of the arm to the down position, arm
+        arm.setTargetPosition(armDownPosition);
+        arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        // Reset the motor encoder so that it reads zero ticks, slide
+        slideL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // Sets the starting position of the arm to the down position, slide
+        slideL.setTargetPosition(armDownPosition);
+        slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideR.setTargetPosition(armDownPosition);
+        slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
@@ -52,6 +84,7 @@ public class RealTele extends LinearOpMode {
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
+
 
         waitForStart();
 
@@ -86,10 +119,12 @@ public class RealTele extends LinearOpMode {
             double frontRightPower = (rotY + rotX + rx) / denominator;
             double backRightPower = (rotY - rotX + rx) / denominator;
 
+
             frontLeftMotor.setPower(frontLeftPower);
             backLeftMotor.setPower(backLeftPower);
             frontRightMotor.setPower(frontRightPower);
             backRightMotor.setPower(backRightPower);
+
 
             if (gamepad2.a) {
                 clawL.setPosition(0.35);
@@ -98,24 +133,72 @@ public class RealTele extends LinearOpMode {
                 clawL.setPosition(0);
                 clawR.setPosition(0);
             }
+
+
             if (gamepad2.dpad_up) {
-                slideL.setPower(-1);
-                slideR.setPower(-1);
-            } else if (gamepad2.dpad_down) {
-                slideL.setPower(1);
-                slideR.setPower(1);
-            } else {
-                slideL.setPower(0);
-                slideR.setPower(0);
+                slideL.setTargetPosition(slideLUpPosition);
+                slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                slideL.setPower(0.5);
+                slideR.setTargetPosition(slideLUpPosition);
+                slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                slideR.setPower(0.5);
             }
+            if (gamepad2.dpad_down) {
+                slideL.setTargetPosition(slideLDownPosition);
+                slideL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                slideL.setPower(0.5);
+                slideR.setTargetPosition(slideLDownPosition);
+                slideR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                slideR.setPower(0.5);
+            }
+
+
             if (gamepad2.dpad_right) {
-                arm.setPower(.3);
-            } else if (gamepad2.dpad_left) {
-                arm.setPower(-.3);
-            } else {
-                arm.setPower(0);
+                arm.setTargetPosition(armUpPosition);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.5);
             }
-            telemetry.addData("Lift Position",slideL.getCurrentPosition() + slideR.getCurrentPosition() + (int)(COUNTS_PER_INCH) );
+            if (gamepad2.dpad_left) {
+                arm.setTargetPosition(armDownPosition);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                arm.setPower(0.5);
+            }
+
+
+                // Get the current position of the arm
+                double positionArm = arm.getCurrentPosition();
+                // Get the target position of the arm
+                double desiredPositionArm = arm.getTargetPosition();
+                // Show the position of the arm on telemetry
+                telemetry.addData("Encoder Position", positionArm);
+                // Show the target position of the arm
+                telemetry.addData("Desired Position", desiredPositionArm);
+
+                // Get the current position of the LEFTSLIDE
+                double positionSlideL = slideL.getCurrentPosition();
+                // Get the target position of the LEFTSLIDE
+                double desiredPositionSlideL = slideL.getTargetPosition();
+                // Show the position of the LEFTSLIDE on telemetry
+                telemetry.addData("Encoder Position", positionSlideL);
+                // Show the target position of the LEFTSLIDE
+                telemetry.addData("Desired Position", desiredPositionSlideL);
+            // Get the current position of the RIGHTSLIDE
+                double positionSlideR = slideL.getCurrentPosition();
+                // Get the target position of the RIGHTSLIDE
+                double desiredPositionSlideR = slideL.getTargetPosition();
+                // Show the position of the RIGHTSLIDE on telemetry
+                telemetry.addData("Encoder Position", positionSlideR);
+                // Show the target position of the RIGTHSLIDE
+                 telemetry.addData("Desired Position", desiredPositionSlideR);
+
+
+
+                telemetry.update();
+
+
+                telemetry.addData("Lift Position", slideL.getCurrentPosition() + slideR.getCurrentPosition() + (int) (COUNTS_PER_INCH));
+            }
         }
+
     }
-}
+
